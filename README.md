@@ -1,5 +1,4 @@
 # PBL-3RD-SEM
-Emergency Call Detection and Priority Routing System
 
 # Emergency Call Detection and Priority Routing System
 
