@@ -5,403 +5,232 @@
 #include <map>
 
 #include "Caller.h"
-#include "EmergencyCall.h"
+#include "Emergency Call.h"
 #include "Incident.h"
 #include "DSU.h"
-#include "CallAnalyzer.h"
+#include "Call analyzer.h"
 #include "Dispatcher.h"
 
 using namespace std;
 
-
-// Function to compare incidents
 struct IncidentCompare
 {
     bool operator()(Incident a, Incident b)
     {
-        return a.getPriority() <
-               b.getPriority();
+        return a.getPriority() < b.getPriority();
     }
 };
 
-
 int main()
 {
-    cout << "========================================\n";
-    cout << " FAKE EMERGENCY CALL DETECTION SYSTEM\n";
-    cout << "========================================\n";
+    cout << "====================================\n";
+    cout << " EMERGENCY CALL PRIORITY SYSTEM\n";
+    cout << "====================================\n";
 
+    // Callers
+    Caller c1(101, "Rahul", "9876543210");
+    Caller c2(102, "Aman", "9876543211");
+    Caller c3(103, "Rohit", "9876543212");
+    Caller c4(104, "Priya", "9876543213");
 
-    // =====================================
-    // 1. CREATE CALLERS
-    // =====================================
-
-    Caller caller1(
-        101,
-        "Rahul",
-        "9876543210"
-    );
-
-    Caller caller2(
-        102,
-        "Aman",
-        "9876543211"
-    );
-
-    Caller caller3(
-        103,
-        "Rohit",
-        "9876543212"
-    );
-
-    Caller caller4(
-        104,
-        "Priya",
-        "9876543213"
-    );
-
-
-    // =====================================
-    // 2. CREATE EMERGENCY CALLS
-    // =====================================
-
+    // Emergency calls
     EmergencyCall call1(
-        1,
-        caller1,
-        "ClockTower",
-        "Accident",
+        1, c1, "ClockTower", "Accident",
         "Two cars collided on road",
-        9,
-        10,
-        10,
-        100
+        9, 10, 10, 100
     );
 
     EmergencyCall call2(
-        2,
-        caller2,
-        "ClockTower",
-        "Accident",
+        2, c2, "ClockTower", "Accident",
         "Multiple vehicles crashed",
-        8,
-        11,
-        10,
-        105
+        8, 11, 10, 105
     );
 
     EmergencyCall call3(
-        3,
-        caller3,
-        "ClockTower",
-        "Accident",
+        3, c3, "ClockTower", "Accident",
         "Road accident reported",
-        7,
-        10,
-        11,
-        110
+        7, 10, 11, 110
     );
 
     EmergencyCall call4(
-        4,
-        caller4,
-        "Market",
-        "Fire",
+        4, c4, "Market", "Fire",
         "Building is on fire",
-        10,
-        50,
-        50,
-        120
+        10, 50, 50, 120
     );
 
+    // Queue
+    queue<EmergencyCall> q;
 
-    // =====================================
-    // 3. QUEUE
-    // =====================================
+    q.push(call1);
+    q.push(call2);
+    q.push(call3);
+    q.push(call4);
 
-    queue<EmergencyCall> incomingCalls;
+    cout << "\nCalls in queue: " << q.size() << endl;
 
-    incomingCalls.push(call1);
-    incomingCalls.push(call2);
-    incomingCalls.push(call3);
-    incomingCalls.push(call4);
+    // Move calls from queue to vector
+    vector<EmergencyCall> calls;
 
-    cout << "\nCalls added to Queue: "
-         << incomingCalls.size()
-         << endl;
-
-
-    // =====================================
-    // 4. MOVE CALLS FROM QUEUE TO VECTOR
-    // =====================================
-
-    vector<EmergencyCall> allCalls;
-
-    while (!incomingCalls.empty())
+    while (!q.empty())
     {
-        EmergencyCall currentCall =
-            incomingCalls.front();
-
-        incomingCalls.pop();
-
-        allCalls.push_back(currentCall);
+        calls.push_back(q.front());
+        q.pop();
     }
 
+    cout << "Calls processed: " << calls.size() << endl;
 
-    cout << "Calls processed from Queue: "
-         << allCalls.size()
-         << endl;
+    // Hash map
+    unordered_map<string, vector<int>> hashMap;
 
+    cout << "\n========== HASH MAP ==========\n";
 
-    // =====================================
-    // 5. HASH MAP
-    // =====================================
-
-    unordered_map<
-        string,
-        vector<int>
-    > hashMap;
-
-
-    cout << "\n========== HASH MAP ANALYSIS ==========\n";
-
-    for (int i = 0; i < allCalls.size(); i++)
+    for (int i = 0; i < calls.size(); i++)
     {
-        string key =
-            CallAnalyzer::createHashKey(
-                allCalls[i]
-            );
+        string key = CallAnalyzer::createHashKey(calls[i]);
 
-        hashMap[key].push_back(
-            allCalls[i].getCallId()
-        );
+        hashMap[key].push_back(calls[i].getCallId());
 
-        cout << "Key: " << key
-             << " -> Call ID: "
-             << allCalls[i].getCallId()
-             << endl;
+        cout << key << " -> Call "
+             << calls[i].getCallId() << endl;
     }
 
+    // DSU
+    DSU dsu(calls.size());
 
-    // =====================================
-    // 6. DSU
-    // =====================================
-
-    DSU dsu(allCalls.size());
-
-
-    for (int i = 0; i < allCalls.size(); i++)
+    for (int i = 0; i < calls.size(); i++)
     {
-        for (int j = i + 1;
-             j < allCalls.size();
-             j++)
+        for (int j = i + 1; j < calls.size(); j++)
         {
-            if (CallAnalyzer::areRelated(
-                    allCalls[i],
-                    allCalls[j]))
+            if (CallAnalyzer::areRelated(calls[i], calls[j]))
             {
                 dsu.unite(i, j);
             }
         }
     }
 
-
-    // =====================================
-    // 7. GROUP CALLS USING DSU
-    // =====================================
-
+    // Groups
     map<int, vector<int>> groups;
 
-    for (int i = 0;
-         i < allCalls.size();
-         i++)
+    for (int i = 0; i < calls.size(); i++)
     {
-        int root = dsu.find(i);
-
-        groups[root].push_back(i);
+        groups[dsu.find(i)].push_back(i);
     }
-
 
     cout << "\n========== INCIDENT GROUPS ==========\n";
 
-    for (auto group : groups)
+    for (auto g : groups)
     {
         cout << "Group: ";
 
-        for (int index : group.second)
+        for (int index : g.second)
         {
-            cout << "Call "
-                 << allCalls[index].getCallId()
-                 << " ";
+            cout << calls[index].getCallId() << " ";
         }
 
         cout << endl;
     }
 
-
-    // =====================================
-    // 8. CREATE INCIDENTS
-    // =====================================
-
+    // Create incidents
     vector<Incident> incidents;
 
-    int incidentId = 1;
+    int id = 1;
 
-    for (auto group : groups)
+    for (auto g : groups)
     {
-        vector<int> callIndexes =
-            group.second;
+        vector<int> indexes = g.second;
 
-        // Take first call as main information
-        EmergencyCall firstCall =
-            allCalls[callIndexes[0]];
+        EmergencyCall first = calls[indexes[0]];
 
+        int severity = 0;
 
-        int highestSeverity = 0;
-
-        for (int index : callIndexes)
+        for (int index : indexes)
         {
-            if (allCalls[index].getSeverity()
-                > highestSeverity)
+            if (calls[index].getSeverity() > severity)
             {
-                highestSeverity =
-                    allCalls[index].getSeverity();
+                severity = calls[index].getSeverity();
             }
         }
 
-
-        int numberOfReports =
-            callIndexes.size();
-
+        int reports = indexes.size();
 
         int priority =
-            CallAnalyzer::calculatePriority(
-                highestSeverity,
-                numberOfReports
-            );
-
+            CallAnalyzer::calculatePriority(severity, reports);
 
         Incident incident(
-            incidentId,
-            firstCall.getEmergencyType(),
-            firstCall.getLocation(),
-            highestSeverity,
+            id,
+            first.getEmergencyType(),
+            first.getLocation(),
+            severity,
             priority
         );
 
-
-        // Add calls to incident
-        for (int index : callIndexes)
+        for (int index : indexes)
         {
-            incident.addCall(
-                allCalls[index].getCallId()
-            );
-        }
+            incident.addCall(calls[index].getCallId());
 
-
-        // Check low information
-        for (int index : callIndexes)
-        {
-            if (CallAnalyzer::isLowInformation(
-                    allCalls[index]))
+            if (CallAnalyzer::isLowInformation(calls[index]))
             {
                 incident.setLowInformation(true);
             }
         }
 
-
         incidents.push_back(incident);
-
-        incidentId++;
+        id++;
     }
 
+    // Display incidents
+    cout << "\n========== INCIDENTS ==========\n";
 
-    // =====================================
-    // 9. DISPLAY INCIDENTS
-    // =====================================
-
-    cout << "\n========== DETECTED INCIDENTS ==========\n";
-
-    for (int i = 0;
-         i < incidents.size();
-         i++)
+    for (Incident incident : incidents)
     {
-        incidents[i].display();
+        incident.display();
     }
 
-
-    // =====================================
-    // 10. PRIORITY QUEUE
-    // =====================================
-
+    // Priority queue
     priority_queue<
         Incident,
         vector<Incident>,
         IncidentCompare
-    > priorityQueue;
+    > pq;
 
-
-    for (int i = 0;
-         i < incidents.size();
-         i++)
+    for (Incident incident : incidents)
     {
-        priorityQueue.push(
-            incidents[i]
-        );
+        pq.push(incident);
     }
 
+    cout << "\n========== PRIORITY ==========\n";
 
-    cout << "\n========== PRIORITY QUEUE ==========\n";
-
-    while (!priorityQueue.empty())
+    while (!pq.empty())
     {
-        Incident highestPriority =
-            priorityQueue.top();
-
-        priorityQueue.pop();
+        Incident incident = pq.top();
+        pq.pop();
 
         cout << "Incident "
-             << highestPriority.getIncidentId()
-             << " | Priority = "
-             << highestPriority.getPriority()
+             << incident.getIncidentId()
+             << " | Priority: "
+             << incident.getPriority()
              << endl;
     }
 
-
-    // =====================================
-    // 11. DISPATCH
-    // =====================================
-
+    // Dispatch
     Dispatcher dispatcher;
 
-
-    cout << "\n========== DISPATCHING ==========\n";
-
-    // Recreate priority queue
-    for (int i = 0;
-         i < incidents.size();
-         i++)
+    for (Incident incident : incidents)
     {
-        priorityQueue.push(
-            incidents[i]
-        );
+        pq.push(incident);
     }
 
+    cout << "\n========== DISPATCH ==========\n";
 
-    while (!priorityQueue.empty())
+    while (!pq.empty())
     {
-        Incident incident =
-            priorityQueue.top();
-
-        priorityQueue.pop();
+        Incident incident = pq.top();
+        pq.pop();
 
         dispatcher.dispatch(incident);
     }
 
-
-    cout << "\n========================================\n";
-    cout << " SYSTEM FINISHED SUCCESSFULLY\n";
-    cout << "========================================\n";
-
+    cout << "\nSystem finished.\n";
 
     return 0;
 }
