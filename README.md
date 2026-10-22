@@ -147,13 +147,13 @@ The project has a working prototype that uses predefined emergency-call inputs. 
 - Incident priority management.
 - Basic response-team selection and dispatch.
 - Testing of the static-input prototype.
+- Replace predefined inputs with dynamic user input.
+- Connect and improve report and incident updates.
 
 **Status:** Core prototype implemented; some integration and incident-grouping tasks remain in progress.
 
 ### Phase III — Planned Development
 
-- Replace predefined inputs with dynamic user input.
-- Connect and improve report and incident updates.
 - Develop and improve the UI/UX dashboard.
 - Complete integration and testing.
 
