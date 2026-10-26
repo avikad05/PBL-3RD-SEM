@@ -1,609 +1,399 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Emergency Response System</title>
+    <title>Emergency Response Dashboard</title>
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    background: #f1f4f8;
-    color: #263746;
-    line-height: 1.5;
-}
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #222;
+        }
 
-header {
-    background: #263746;
-    color: white;
-    padding: 24px 5%;
-}
+        .container {
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
 
-header h1 {
-    font-size: clamp(22px, 4vw, 32px);
-}
+        h1 {
+            text-align: center;
+            color: #b42318;
+            font-size: 26px;
+        }
 
-header p {
-    color: #dbe4ed;
-    margin-top: 5px;
-}
+        p {
+            text-align: center;
+            color: #555;
+        }
 
-#currentDateTime {
-    margin-top: 12px;
-    font-size: 14px;
-}
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+        }
 
-.container {
-    width: 92%;
-    max-width: 1250px;
-    margin: 25px auto;
-}
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
+        button {
+            padding: 12px 16px;
+            margin: 8px 4px 0 0;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            color: white;
+        }
 
-.card, .section {
-    background: white;
-    padding: 22px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px #0000000b;
-}
+        .camera-btn {
+            background: #b42318;
+        }
 
-.card h3 {
-    font-size: 14px;
-    color: #667788;
-}
+        .capture-btn {
+            background: #198754;
+        }
 
-.card p {
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 8px;
-}
+        .upload-btn {
+            background: #2457c5;
+            display: inline-block;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+        }
 
-.section {
-    margin-bottom: 25px;
-}
+        .remove-btn {
+            background: #555;
+        }
 
-.section h2 {
-    margin-bottom: 20px;
-    font-size: 22px;
-}
+        #camera, #photoPreview {
+            display: none;
+            width: 100%;
+            max-height: 400px;
+            margin-top: 15px;
+            border-radius: 10px;
+            background: #eee;
+        }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-}
+        #status {
+            margin-top: 15px;
+            color: #444;
+            overflow-wrap: anywhere;
+        }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
+        .photo-section {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
 
-.full {
-    grid-column: 1 / -1;
-}
+        .submit-btn {
+            width: 100%;
+            margin-top: 25px;
+            background: #b42318;
+            font-weight: bold;
+        }
 
-label {
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 7px;
-}
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
 
-input, select, textarea {
-    width: 100%;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #cbd5df;
-    border-radius: 7px;
-    font-size: 15px;
-    background: white;
-}
+            .container {
+                padding: 17px;
+                margin: 10px auto;
+            }
 
-textarea {
-    min-height: 110px;
-    resize: vertical;
-}
+            h1 {
+                font-size: 22px;
+            }
 
-input[type="file"] {
-    padding: 10px;
-}
+            button {
+                width: 100%;
+                margin: 7px 0;
+            }
 
-input:focus, select:focus, textarea:focus {
-    outline: 2px solid #9bc8f0;
-    border-color: #2878b5;
-}
-
-.hint {
-    color: #657587;
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-.buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-button {
-    border: none;
-    border-radius: 7px;
-    padding: 13px 20px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.submit {
-    background: #c62828;
-    color: white;
-}
-
-.reset {
-    background: #e6ebf0;
-    color: #263746;
-}
-
-button:hover {
-    opacity: 0.88;
-}
-
-#message {
-    display: none;
-    padding: 14px;
-    margin-top: 18px;
-    border-radius: 7px;
-    overflow-wrap: anywhere;
-}
-
-.success {
-    display: block !important;
-    color: #176b36;
-    background: #e5f6eb;
-}
-
-.error {
-    display: block !important;
-    color: #a61b1b;
-    background: #fdeaea;
-}
-
-.table-wrap {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 720px;
-}
-
-th, td {
-    text-align: left;
-    padding: 13px;
-    border-bottom: 1px solid #e5e9ee;
-    font-size: 13px;
-    overflow-wrap: anywhere;
-}
-
-th {
-    background: #edf2f7;
-}
-
-.badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    background: #fff0c2;
-    color: #805700;
-    white-space: nowrap;
-}
-
-.critical { color: #c62828; font-weight: bold; }
-.high { color: #d96700; font-weight: bold; }
-.medium { color: #967000; font-weight: bold; }
-.low { color: #27804a; font-weight: bold; }
-
-footer {
-    text-align: center;
-    padding: 22px;
-    color: #657587;
-    font-size: 13px;
-}
-
-/* Mobile screen */
-@media (max-width: 650px) {
-    header {
-        padding: 20px 5%;
-    }
-
-    .container {
-        width: 94%;
-        margin: 16px auto;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .card {
-        padding: 16px;
-    }
-
-    .card p {
-        font-size: 24px;
-    }
-
-    .section {
-        padding: 17px;
-        border-radius: 9px;
-    }
-
-    .section h2 {
-        font-size: 19px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .full {
-        grid-column: auto;
-    }
-
-    input, select, textarea {
-        font-size: 16px;
-    }
-
-    .buttons {
-        flex-direction: column;
-    }
-
-    .buttons button {
-        width: 100%;
-    }
-}
-</style>
+            .upload-btn {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Emergency Response System</h1>
-    <p>Emergency Call Detection & Priority Routing</p>
-    <div id="currentDateTime">Loading date and time...</div>
-</header>
+<div class="container">
 
-<main class="container">
+    <h1>🚨 Emergency Response Dashboard</h1>
 
-    <div class="stats">
-        <div class="card">
-            <h3>Total Reports</h3>
-            <p id="totalReports">3</p>
-        </div>
+    <p>Report an emergency and attach a photo of the incident.</p>
 
-        <div class="card">
-            <h3>Critical Reports</h3>
-            <p id="criticalReports">1</p>
-        </div>
+    <form id="emergencyForm">
 
-        <div class="card">
-            <h3>Under Review</h3>
-            <p id="pendingReports">3</p>
-        </div>
-    </div>
+        <label for="location">Incident Location</label>
+        <input
+            type="text"
+            id="location"
+            placeholder="Enter location"
+            required
+        >
 
-    <section class="section">
-        <h2>Report an Emergency</h2>
+        <label for="emergencyType">Emergency Type</label>
+        <input
+            type="text"
+            id="emergencyType"
+            placeholder="Accident, Fire, Medical, Crime..."
+            required
+        >
 
-        <form id="reportForm">
-            <div class="form-grid">
+        <label for="description">Incident Description</label>
+        <textarea
+            id="description"
+            rows="4"
+            placeholder="Describe the emergency"
+            required
+        ></textarea>
 
-                <div class="form-group">
-                    <label for="name">Reporter Name</label>
-                    <input id="name" type="text"
-                           placeholder="Enter your name" required>
-                </div>
+        <div class="photo-section">
 
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input id="phone" type="tel"
-                           placeholder="Enter phone number" required>
-                </div>
+            <h3>📸 Attach Incident Photo</h3>
 
-                <div class="form-group">
-                    <label for="type">Emergency Type</label>
-                    <select id="type" required>
-                        <option value="">Select type</option>
-                        <option>Accident</option>
-                        <option>Fire</option>
-                        <option>Medical</option>
-                        <option>Crime</option>
-                        <option>Other</option>
-                    </select>
-                </div>
+            <button type="button" class="camera-btn"
+                    id="openCamera">
+                📷 Open Camera
+            </button>
 
-                <div class="form-group">
-                    <label for="location">Location / Landmark</label>
-                    <input id="location" type="text"
-                           placeholder="Enter location" required>
-                </div>
+            <button type="button" class="capture-btn"
+                    id="capturePhoto" hidden>
+                📸 Capture Photo
+            </button>
 
-                <div class="form-group full">
-                    <label for="description">Emergency Description</label>
-                    <textarea id="description"
-                              placeholder="Describe what happened..."
-                              required></textarea>
-                </div>
+            <button type="button" class="remove-btn"
+                    id="closeCamera" hidden>
+                Close Camera
+            </button>
 
-                <div class="form-group full">
-                    <label for="photos">Upload Emergency Photos</label>
-                    <input id="photos" type="file"
-                           accept="image/*" multiple required>
+            <video id="camera" autoplay playsinline muted></video>
 
-                    <p class="hint">
-                        At least one photo is required. You can select
-                        multiple photos. No fixed maximum is set.
-                    </p>
+            <canvas id="canvas" hidden></canvas>
 
-                    <p class="hint" id="photoCount">
-                        No photos selected.
-                    </p>
-                </div>
+            <label for="photoUpload" class="upload-btn">
+                🖼️ Upload Photo from Gallery
+            </label>
 
-                <div class="form-group full">
-                    <label for="submissionTime">
-                        Current Date & Time
-                    </label>
-                    <input id="submissionTime" type="text" readonly>
-                </div>
+            <input
+                type="file"
+                id="photoUpload"
+                accept="image/*"
+                capture="environment"
+                hidden
+            >
 
+            <img id="photoPreview" alt="Selected incident photo">
+
+            <button type="button" id="removePhoto"
+                    class="remove-btn" hidden>
+                ❌ Remove Photo
+            </button>
+
+            <div id="status" role="status" aria-live="polite">
+                No photo selected.
             </div>
 
-            <div class="buttons">
-                <button class="submit" type="submit">
-                    Submit Report
-                </button>
-
-                <button class="reset" type="reset">
-                    Clear Form
-                </button>
-            </div>
-
-            <div id="message" role="status" aria-live="polite"></div>
-        </form>
-    </section>
-
-    <section class="section">
-        <h2>Emergency Incident Reports</h2>
-
-        <p class="hint" style="margin-bottom:15px;">
-            New reports appear at the top of the list.
-            On mobile, swipe the table horizontally to see all columns.
-        </p>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Report ID</th>
-                        <th>Type</th>
-                        <th>Location</th>
-                        <th>Date & Time</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody id="reportTable">
-                    <tr>
-                        <td>INC-001</td>
-                        <td>Accident</td>
-                        <td>Clock Tower</td>
-                        <td>Example record</td>
-                        <td class="high">High</td>
-                        <td><span class="badge">Under Review</span></td>
-                    </tr>
-
-                    <tr>
-                        <td>INC-002</td>
-                        <td>Fire</td>
-                        <td>Commercial Area</td>
-                        <td>Example record</td>
-                        <td class="critical">Critical</td>
-                        <td><span class="badge">Under Review</span></td>
-                    </tr>
-
-                    <tr>
-                        <td>INC-003</td>
-                        <td>Medical</td>
-                        <td>Residential Area</td>
-                        <td>Example record</td>
-                        <td class="medium">Medium</td>
-                        <td><span class="badge">Under Review</span></td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
-    </section>
 
-</main>
+        <button type="submit" class="submit-btn">
+            Submit Emergency Report
+        </button>
 
-<footer>
-    Emergency Response System | Academic Project Prototype
-</footer>
+    </form>
+
+</div>
 
 <script>
-function currentDateTime() {
-    const now = new Date();
+    const video = document.getElementById("camera");
+    const canvas = document.getElementById("canvas");
+    const preview = document.getElementById("photoPreview");
+    const statusText = document.getElementById("status");
 
-    const date = now.toLocaleDateString("en-CA");
-    const time = now.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
+    const openCameraBtn = document.getElementById("openCamera");
+    const captureBtn = document.getElementById("capturePhoto");
+    const closeCameraBtn = document.getElementById("closeCamera");
+    const uploadInput = document.getElementById("photoUpload");
+    const removePhotoBtn = document.getElementById("removePhoto");
+
+    let cameraStream = null;
+    let photoBlob = null;
+    let photoURL = null;
+
+    function stopCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+
+        video.srcObject = null;
+        video.style.display = "none";
+
+        captureBtn.hidden = true;
+        closeCameraBtn.hidden = true;
+        openCameraBtn.hidden = false;
+    }
+
+    function showPhoto(blob) {
+        if (photoURL) {
+            URL.revokeObjectURL(photoURL);
+        }
+
+        photoBlob = blob;
+        photoURL = URL.createObjectURL(blob);
+
+        preview.src = photoURL;
+        preview.style.display = "block";
+        removePhotoBtn.hidden = false;
+
+        statusText.textContent = "Photo ready to attach to the report.";
+    }
+
+    openCameraBtn.addEventListener("click", async () => {
+        if (!navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia) {
+            statusText.textContent =
+                "Camera is not supported here. Open the website using HTTPS or upload a photo.";
+            return;
+        }
+
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: false
+            });
+
+            video.srcObject = cameraStream;
+            video.style.display = "block";
+
+            captureBtn.hidden = false;
+            closeCameraBtn.hidden = false;
+            openCameraBtn.hidden = true;
+
+            statusText.textContent =
+                "Camera is open. Capture the incident photo.";
+
+        } catch (error) {
+            statusText.textContent =
+                "Camera access failed. Allow camera permission or upload a photo. " +
+                error.message;
+        }
     });
 
-    return date + " " + time;
-}
+    captureBtn.addEventListener("click", () => {
+        if (!cameraStream || !video.videoWidth) {
+            statusText.textContent = "Camera is not ready yet.";
+            return;
+        }
 
-function updateClock() {
-    document.getElementById("currentDateTime").textContent =
-        currentDateTime();
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-    document.getElementById("submissionTime").value =
-        currentDateTime();
-}
+        const context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-updateClock();
-setInterval(updateClock, 1000);
+        canvas.toBlob(blob => {
+            if (!blob) {
+                statusText.textContent = "Could not capture the photo.";
+                return;
+            }
 
-const form = document.getElementById("reportForm");
-const photos = document.getElementById("photos");
-const message = document.getElementById("message");
-const table = document.getElementById("reportTable");
-const photoCount = document.getElementById("photoCount");
-
-let nextID = table.rows.length + 1;
-
-photos.addEventListener("change", function () {
-    const count = photos.files.length;
-
-    photoCount.textContent = count === 0
-        ? "No photos selected."
-        : count + (count === 1 ? " photo selected." : " photos selected.");
-});
-
-function updateStatistics() {
-    const rows = Array.from(table.rows);
-
-    document.getElementById("totalReports").textContent = rows.length;
-
-    document.getElementById("criticalReports").textContent =
-        rows.filter(row =>
-            row.cells[4].textContent.trim() === "Critical"
-        ).length;
-
-    document.getElementById("pendingReports").textContent =
-        rows.filter(row =>
-            row.cells[5].textContent.trim() === "Under Review"
-        ).length;
-}
-
-function calculateDemoPriority(type, description) {
-    const text = description.toLowerCase();
-
-    if (
-        type === "Fire" ||
-        text.includes("unconscious") ||
-        text.includes("severe bleeding") ||
-        text.includes("trapped")
-    ) {
-        return "Critical";
-    }
-
-    if (
-        type === "Accident" ||
-        type === "Medical" ||
-        type === "Crime"
-    ) {
-        return "High";
-    }
-
-    return "Medium";
-}
-
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    message.className = "";
-    message.textContent = "";
-
-    if (photos.files.length < 1) {
-        message.textContent =
-            "Please select at least one emergency photo.";
-        message.className = "error";
-        photos.focus();
-        return;
-    }
-
-    const type = document.getElementById("type").value;
-    const location = document.getElementById("location").value.trim();
-    const description =
-        document.getElementById("description").value.trim();
-
-    const id = "INC-" + String(nextID).padStart(3, "0");
-    const dateTime = currentDateTime();
-    const priority = calculateDemoPriority(type, description);
-
-    const row = table.insertRow(0);
-
-    const values = [
-        id,
-        type,
-        location,
-        dateTime,
-        priority,
-        "Under Review"
-    ];
-
-    values.forEach(function (value) {
-        const cell = row.insertCell();
-        cell.textContent = value;
+            showPhoto(blob);
+            stopCamera();
+        }, "image/jpeg", 0.9);
     });
 
-    row.cells[4].className = priority.toLowerCase();
+    closeCameraBtn.addEventListener("click", () => {
+        stopCamera();
+        statusText.textContent = "Camera closed.";
+    });
 
-    row.cells[5].textContent = "";
-    const badge = document.createElement("span");
-    badge.className = "badge";
-    badge.textContent = "Under Review";
-    row.cells[5].appendChild(badge);
+    uploadInput.addEventListener("change", () => {
+        const file = uploadInput.files[0];
 
-    nextID++;
-    updateStatistics();
+        if (!file) return;
 
-    message.textContent =
-        "Report submitted successfully! Your Report ID is " + id +
-        ". Selected photos: " + photos.files.length +
-        ". The report is under review.";
+        if (!file.type.startsWith("image/")) {
+            statusText.textContent = "Please select an image file.";
+            uploadInput.value = "";
+            return;
+        }
 
-    message.className = "success";
+        stopCamera();
+        showPhoto(file);
+    });
 
-    form.reset();
-    photoCount.textContent = "No photos selected.";
-    updateClock();
-});
+    removePhotoBtn.addEventListener("click", () => {
+        photoBlob = null;
+        preview.removeAttribute("src");
+        preview.style.display = "none";
+        removePhotoBtn.hidden = true;
+        uploadInput.value = "";
 
-form.addEventListener("reset", function () {
-    setTimeout(function () {
-        photoCount.textContent = "No photos selected.";
-        message.className = "";
-        message.textContent = "";
-        updateClock();
-    }, 0);
-});
+        if (photoURL) {
+            URL.revokeObjectURL(photoURL);
+            photoURL = null;
+        }
 
-updateStatistics();
+        statusText.textContent = "Photo removed.";
+    });
+
+    document.getElementById("emergencyForm").addEventListener(
+        "submit",
+        event => {
+            event.preventDefault();
+
+            if (!photoBlob) {
+                statusText.textContent =
+                    "Please capture or upload an incident photo first.";
+                return;
+            }
+
+            const report = {
+                location: document.getElementById("location").value,
+                emergencyType: document.getElementById("emergencyType").value,
+                description: document.getElementById("description").value,
+                photo: photoBlob
+            };
+
+            console.log("Demo report:", report);
+
+            alert(
+                "Demo report prepared successfully! " +
+                "The photo is attached in the browser, but this demo does not save reports to a server."
+            );
+        }
+    );
+
+    window.addEventListener("beforeunload", stopCamera);
 </script>
 
 </body>
